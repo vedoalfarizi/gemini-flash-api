@@ -13,9 +13,6 @@ coverage/
 tmp/
 .tmp/
 
-# Local assets
-uploads/
-
 # Editor directories and OS files
 .vscode/
 .idea/
