@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: Gemini Flash API
+  version: "1.0.0"
+security: []
+servers:
+  - url: http://localhost:3000
+paths:
+  /generate-text:
+    post:
+      summary: Generate text with Gemini
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: Natural language instruction for the model.
+      responses:
+        '200':
+          description: Successful text generation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+              examples:
+                default:
+                  summary: Example successful response
+                  value:
+                    result: "Gemini response text"
+        '400':
+          description: Prompt missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /generate-from-image:
+    post:
+      summary: Generate text from an image prompt
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - prompt
+                - image
+              properties:
+                prompt:
+                  type: string
+                  description: Instruction to accompany the uploaded image.
+                image:
+                  type: string
+                  format: binary
+                  description: Image file (PNG, JPEG, JPG, WEBP) up to 5MB.
+      responses:
+        '200':
+          description: Generated response from the model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '400':
+          description: Invalid prompt, missing file, disallowed MIME type, or file too large.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /generate-from-document:
+    post:
+      summary: Generate text from a document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - prompt
+                - document
+              properties:
+                prompt:
+                  type: string
+                  description: Instruction describing what to extract from the document.
+                document:
+                  type: string
+                  format: binary
+                  description: Document (PDF, DOC, DOCX, TXT) up to 5MB.
+      responses:
+        '200':
+          description: Generated response from the document context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '400':
+          description: Invalid prompt, missing file, disallowed MIME type, or file too large.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /generate-from-audio:
+    post:
+      summary: Generate text from an audio file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - prompt
+                - audio
+              properties:
+                prompt:
+                  type: string
+                  description: Instruction describing how to interpret the audio.
+                audio:
+                  type: string
+                  format: binary
+                  description: Audio file (MP3, MPEG, WAV, WEBM, OGG) up to 5MB.
+      responses:
+        '200':
+          description: Generated response based on audio content.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '400':
+          description: Invalid prompt, missing file, disallowed MIME type, or file too large.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    GenerateResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: Combined text returned by the Gemini model.
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+  responses:
+    InternalError:
+      description: Unexpected error from the upstream Gemini service or server runtime.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

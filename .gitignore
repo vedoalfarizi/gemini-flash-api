@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+
+# Build artifacts
+dist/
+build/
+coverage/
+tmp/
+.tmp/
+
+# Local assets
+uploads/
+
+# Editor directories and OS files
+.vscode/
+.idea/
+.DS_Store
